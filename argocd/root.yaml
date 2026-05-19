@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: timescaledb-apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://gitea.vhn-demo.duckdns.org/hoang/timescaledb.git
+    path: argocd/applications
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

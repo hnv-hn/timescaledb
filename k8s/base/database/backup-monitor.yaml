@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cnpg-backup-alert
+  namespace: database
+spec:
+  groups:
+    - name: cnpg.rules
+      rules:
+        - alert: CNPGBackupMissing
+          expr: time() - cnpg_last_backup_time_seconds > 86400
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "CNPG Backup missing"
+            description: "No backup in last 24h"

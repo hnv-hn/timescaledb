@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: timescaledb
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  source:
+    repoURL: 'https://gitea.vhn-demo.duckdns.org/hoang/timescaledb.git'
+    path: k8s/base/database # cluster.yaml
+    targetRevision: main
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: database
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    - SkipDryRunOnMissingResource=true
+  ignoreDifferences:
+  - group: postgresql.cnpg.io
+    kind: Cluster
+    jqPathExpressions:
+    - .status

@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: timescale-restore-test
+  namespace: database
+spec:
+  schedule: "0 4 * * *"   # täglich 04:00
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: restore-test
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  kubectl apply -f /manifests/restore-test.yaml
+                  sleep 300
+
+                  kubectl get pods -n database
+
+                  echo "✅ Restore Test executed"
+
+                  kubectl delete cluster timescale-restore-test -n database || true
+              volumeMounts:
+                - name: manifests
+                  mountPath: /manifests
+          volumes:
+            - name: manifests
+              configMap:
+                name: restore-test-manifest

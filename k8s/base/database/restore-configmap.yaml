@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: restore-test-manifest
+  namespace: database
+data:
+  restore-test.yaml: |
+    apiVersion: postgresql.cnpg.io/v1
+    kind: Cluster
+    metadata:
+      name: timescale-restore-test
+    spec:
+      instances: 1
+      imageName: ghcr.io/cloudnative-pg/postgresql:15
+      bootstrap:
+        recovery:
+          source: timescale-cluster
+          recoveryTarget:
+            targetImmediate: true
+      storage:
+        size: 10Gi
+      externalClusters:
+        - name: timescale-cluster
+          barmanObjectStore:
+            destinationPath: "s3://backups/"
+            endpointURL: "http://minio.minio-system.svc.cluster.local:9000"
+            s3Credentials:
+              accessKeyId:
+                name: s3-creds
+                key: ACCESS_KEY_ID
+              secretAccessKey:
+                name: s3-creds
+                key: SECRET_ACCESS_KEY

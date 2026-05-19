@@ -1,0 +1,12 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: timescale-backup-hourly
+  namespace: database
+spec:
+  schedule: "0 0 * * * *"   # jede Stunden
+  backupOwnerReference: self
+  cluster:
+    name: timescale-cluster
+  method: barmanObjectStore
+
