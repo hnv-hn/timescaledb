@@ -4,26 +4,26 @@ metadata:
   name: timescaledb
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: '2'
 spec:
   project: default
   source:
     repoURL: 'https://gitea.vhn-demo.duckdns.org/hoang/timescaledb.git'
-    path: k8s/base/database # cluster.yaml
+    path: k8s/base/hetida-platform-cnpg
     targetRevision: main
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: database
+    namespace: hetida-platform-cnpg
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
-    - ServerSideApply=true
-    - SkipDryRunOnMissingResource=true
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
   ignoreDifferences:
-  - group: postgresql.cnpg.io
-    kind: Cluster
-    jqPathExpressions:
-    - .status
+    - group: postgresql.cnpg.io
+      kind: Cluster
+      jqPathExpressions:
+        - .status

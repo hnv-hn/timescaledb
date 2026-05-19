@@ -11,7 +11,7 @@ spec:
     targetRevision: 5.3.0
     helm:
       values: |
-        mode: standalone # WICHTIG: in Produktion solltest du den Modus "distributed" verwenden
+        mode: standalone # WICHTIG: in Produktion den Modus "distributed" verwenden
         replicas: 1 # WICHTIG: in Produktion mindestens 4 Replikate
         buckets:
           - name: backups
@@ -29,5 +29,5 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
-    - ServerSideApply=true
+      - CreateNamespace=true
+      - ServerSideApply=true
