@@ -10,3 +10,5 @@ resources:
   - restore-configmap.yaml
   - backup-monitor.yaml
   - postgres-monitor.yaml
+  - grafana-dashboard.yaml
+  - prometheus-rules.yaml

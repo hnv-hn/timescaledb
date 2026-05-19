@@ -5,26 +5,26 @@ metadata:
   namespace: database
 spec:
   instances: 1
-  imageName: ghcr.io/cloudnative-pg/postgresql:15
+  imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
   bootstrap:
     recovery:
       source: timescale-cluster
       recoveryTarget:
-        targetImmediate: true   # sofort letzter WAL Stand
+        targetImmediate: true # sofort letzter WAL Stand
   storage:
-    size: 10Gi   # kleiner für Tests
+    size: 10Gi # kleiner für Tests
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "200m"
+      memory: '512Mi'
+      cpu: '200m'
     limits:
-      memory: "1Gi"
-      cpu: "500m"
+      memory: '1Gi'
+      cpu: '500m'
   externalClusters:
     - name: timescale-cluster
       barmanObjectStore:
-        destinationPath: "s3://backups/"
-        endpointURL: "http://minio.minio-system.svc.cluster.local:9000"
+        destinationPath: 's3://backups/'
+        endpointURL: 'http://minio.minio-system.svc.cluster.local:9000'
         s3Credentials:
           accessKeyId:
             name: s3-creds

@@ -5,7 +5,7 @@ metadata:
   namespace: hetida-platform-cnpg
 spec:
   instances: 3
-  imageName: ghcr.io/cloudnative-pg/postgresql:15
+  imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
 
   bootstrap:
     initdb:
