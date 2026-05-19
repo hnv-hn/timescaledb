@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: restore-test-manifest
-  namespace: database
+  namespace: hetida-platform-cnpg
 data:
   restore-test.yaml: |
     apiVersion: postgresql.cnpg.io/v1

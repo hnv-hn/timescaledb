@@ -1,4 +1,14 @@
-# Recovery
+# Timescale DB + WAL-Archiv
+
+## Einschränkung
+
+Wenn nur Longhorn verwendet werden soll, muss die Einschränkung akzeptieren:
+
+- Restore auf Snapshot-Zeitpunkt
+- kein voll flexibles PITR wie mit WAL-Archiv, denn WAL-Archi wird als Object-Backup mit barmanObjectStore realisiert, nur S3-kompatibel
+- PITR mit beliebigem Timestamp braucht WAL-Archivierung
+
+## Recovery
 
 ⚠️ Restore NICHT über Argo deployen
 
@@ -29,6 +39,7 @@ MinIO Passwort auslesen
 ```bash
 kubectl get secret minio -n minio-system -o jsonpath="{.data.rootPassword}" | base64 -d
 ```
+
 MinIO User auslesen
 
 ```bash
@@ -102,7 +113,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Backup
 metadata:
   name: restore-test-backup
-  namespace: database
+  namespace: hetida-platform-cnpg
 spec:
   cluster:
     name: timescale-cluster
@@ -112,7 +123,7 @@ EOF
 Warten:
 
 ```bash
-kubectl get backups -n database
+kubectl get backups -n hetida-platform-cnpg
 ```
 
 Erwarten:
@@ -130,7 +141,7 @@ SELECT * FROM test
 
 Restore Cluster erstellen
 
-*Zeitpunkte einsetzen*
+_Zeitpunkte einsetzen_
 
 ```bash
 kubectl apply -f - <<EOF
@@ -138,7 +149,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: timescale-restore-test
-  namespace: database
+  namespace: hetida-platform-cnpg
 spec:
   instances: 1
 
@@ -168,4 +179,3 @@ spec:
             key: SECRET_ACCESS_KEY
 EOF
 ```
-

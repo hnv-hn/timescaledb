@@ -2,6 +2,9 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RECOVERY_DIR="$SCRIPT_DIR/../k8s/recovery"
+
 MODE=$1
 TIMESTAMP=$2
 

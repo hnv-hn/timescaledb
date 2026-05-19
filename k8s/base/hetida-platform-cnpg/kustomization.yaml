@@ -8,5 +8,5 @@ resources:
   - backup-daily.yaml
   - restore-cronjob.yaml
   - restore-configmap.yaml
-
-
+  - backup-monitor.yaml
+  - postgres-monitor.yaml

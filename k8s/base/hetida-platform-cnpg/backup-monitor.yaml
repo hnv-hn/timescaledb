@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: cnpg-backup-alert
-  namespace: database
+  namespace: hetida-platform-cnpg
 spec:
   groups:
     - name: cnpg.rules
@@ -13,5 +13,5 @@ spec:
           labels:
             severity: critical
           annotations:
-            summary: "CNPG Backup missing"
-            description: "No backup in last 24h"
+            summary: 'CNPG Backup missing'
+            description: 'No backup in last 24h'

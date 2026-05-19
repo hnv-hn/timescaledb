@@ -1,0 +1,35 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: postgres-monitor
+  namespace: hetida-platform-cnpg
+spec:
+  groups:
+    - name: postgres.rules
+      rules:
+        - alert: PostgresDeadlockDetected
+          expr: increase(pg_stat_database_deadlocks[5m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'PostgreSQL deadlock detected'
+            description: 'One or more deadlocks were detected in PostgreSQL in the last 5 minutes.'
+
+        - alert: PostgresConnectionSaturation
+          expr: pg_stat_database_numbackends{datname="app"} / 100 > 0.9
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'PostgreSQL connection usage high'
+            description: 'More than 90% of max_connections are in use for database app.'
+
+        - alert: PostgresIdleInTransaction
+          expr: increase(pg_stat_activity{state="idle in transaction"}[10m]) > 5
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'PostgreSQL idle-in-transaction connections'
+            description: 'More than 5 idle-in-transaction connections have been observed in the last 10 minutes.'

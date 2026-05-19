@@ -2,9 +2,9 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: timescale-restore-test
-  namespace: database
+  namespace: hetida-platform-cnpg
 spec:
-  schedule: "0 4 * * *"   # täglich 04:00
+  schedule: '0 4 * * *' # täglich 04:00
   jobTemplate:
     spec:
       template:
@@ -20,11 +20,11 @@ spec:
                   kubectl apply -f /manifests/restore-test.yaml
                   sleep 300
 
-                  kubectl get pods -n database
+                  kubectl get pods -n hetida-platform-cnpg
 
                   echo "✅ Restore Test executed"
 
-                  kubectl delete cluster timescale-restore-test -n database || true
+                  kubectl delete cluster timescale-restore-test -n hetida-platform-cnpg || true
               volumeMounts:
                 - name: manifests
                   mountPath: /manifests
