@@ -6,19 +6,21 @@ metadata:
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:15
+
   bootstrap:
-    initdb:
-      postInitSQL:
-        - CREATE EXTENSION IF NOT EXISTS timescaledb;
     recovery:
       source: timescale-cluster
+      recoveryTarget:
+        targetImmediate: true
+
   storage:
     size: 50Gi
+
   externalClusters:
     - name: timescale-cluster
       barmanObjectStore:
-        destinationPath: "s3://backups/"
-        endpointURL: "http://minio.minio-system.svc.cluster.local:9000"
+        destinationPath: 's3://backups/'
+        endpointURL: 'http://minio.minio-system.svc.cluster.local:9000'
         s3Credentials:
           accessKeyId:
             name: s3-creds

@@ -10,14 +10,14 @@ spec:
     recovery:
       source: timescale-cluster
       recoveryTarget:
-        targetTime: "2026-05-06 02:30:00"   # ANPASSEN
+        targetTime: '2026-05-06T02:30:00' # ANPASSEN
   storage:
     size: 50Gi
   externalClusters:
     - name: timescale-cluster
       barmanObjectStore:
-        destinationPath: "s3://backups/"
-        endpointURL: "http://minio.minio-system.svc.cluster.local:9000"
+        destinationPath: 's3://backups/'
+        endpointURL: 'http://minio.minio-system.svc.cluster.local:9000'
         s3Credentials:
           accessKeyId:
             name: s3-creds
