@@ -14,6 +14,8 @@ spec:
     helm:
       values: |
         installCRDs: false
+        monitoring:
+          podMonitorEnabled: true
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: cnpg-system
@@ -21,14 +23,13 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-    - CreateNamespace=true
-    - ServerSideApply=true
-    - SkipDryRunOnMissingResource=true
-    automated:
       allowEmpty: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
   ignoreDifferences:
-  - group: apiextensions.k8s.io
-    kind: CustomResourceDefinition
-    jqPathExpressions:
-    - .spec.conversion.webhook.clientConfig.caBundle
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jqPathExpressions:
+        - .spec.conversion.webhook.clientConfig.caBundle

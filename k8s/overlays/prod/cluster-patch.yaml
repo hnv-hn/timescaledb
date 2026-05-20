@@ -1,12 +1,12 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: timescale-cluster
-  namespace: hetida-platform-cnpg
+  name: timescaledb
 spec:
   instances: 3
   storage:
     size: 100Gi
+    storageClass: longhorn
   resources:
     requests:
       memory: '4Gi'

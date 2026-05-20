@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-cnpg-backup-dashboard
+  labels:
+    grafana_dashboard: '1'
+data:
+  timescaledb-backup.json: |
+    {
+      "title": "CNPG Backup Monitoring (timescaledb)",
+      "uid": "timescaledb-backup",
+      "tags": ["postgres", "cnpg", "backup"],
+      "timezone": "browser",
+      "schemaVersion": 27,
+      "version": 1,
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Last successful backup (age)",
+          "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 },
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "time() - cnpg_last_successful_backup_timestamp{cluster=\"timescaledb\"}",
+              "legendFormat": "seconds since backup"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 86400 },
+                  { "color": "red", "value": 172800 }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "WAL archive status",
+          "gridPos": { "h": 8, "w": 16, "x": 8, "y": 0 },
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "cnpg_pg_wal_archive_status{cluster=\"timescaledb\"}",
+              "legendFormat": "{{pod}}"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Backup timestamps",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "cnpg_last_successful_backup_timestamp{cluster=\"timescaledb\"}",
+              "legendFormat": "last success"
+            },
+            {
+              "expr": "cnpg_last_failed_backup_timestamp{cluster=\"timescaledb\"}",
+              "legendFormat": "last failed"
+            }
+          ]
+        }
+      ]
+    }

@@ -2,34 +2,39 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: cnpg-backup-alert
-  namespace: hetida-platform-cnpg
 spec:
   groups:
     - name: cnpg.backup.rules
       rules:
         - alert: CNPGBackupMissing
-          expr: time() - cnpg_last_successful_backup_timestamp{cluster="timescale-cluster"} > 86400
+          expr: time() - cnpg_last_successful_backup_timestamp{cluster="timescaledb"} > 86400
           for: 10m
           labels:
             severity: critical
+            team: platform
+            alertmanager: enabled
           annotations:
             summary: 'CNPG backup missing'
-            description: 'No successful backup for timescale-cluster in the last 24 hours.'
+            description: 'No successful backup for timescaledb in the last 24 hours.'
 
         - alert: CNPGBackupFailed
-          expr: cnpg_last_failed_backup_timestamp{cluster="timescale-cluster"} > cnpg_last_successful_backup_timestamp{cluster="timescale-cluster"}
+          expr: cnpg_last_failed_backup_timestamp{cluster="timescaledb"} > cnpg_last_successful_backup_timestamp{cluster="timescaledb"}
           for: 15m
           labels:
             severity: critical
+            team: platform
+            alertmanager: enabled
           annotations:
             summary: 'CNPG backup failed'
-            description: 'Last backup attempt failed for timescale-cluster.'
+            description: 'Last backup attempt failed for timescaledb.'
 
         - alert: CNPGWalArchiveLag
-          expr: cnpg_pg_wal_archive_status{cluster="timescale-cluster"} == 0
+          expr: cnpg_pg_wal_archive_status{cluster="timescaledb"} == 0
           for: 15m
           labels:
             severity: warning
+            team: platform
+            alertmanager: enabled
           annotations:
             summary: 'CNPG WAL archiving issue'
-            description: 'WAL archiving may be stalled for timescale-cluster.'
+            description: 'WAL archiving may be stalled for timescaledb.'

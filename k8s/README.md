@@ -2,26 +2,30 @@
 
 ## Layout
 
-- `base/hetida-platform-cnpg/` — cluster, backups, monitoring, restore test (no credentials in Git)
-- `overlays/dev/` — 2 instances, 20Gi, 7d backup retention
-- `overlays/prod/` — 3 instances, 100Gi, 30d retention, higher resources
-- `recovery/` — manual restore manifests (apply after secrets exist in namespace)
+- `base/crds/` — CNPG 0.28 CRDs (10 resources)
+- `base/hetida-platform-dev/` — cluster, backups, monitoring
+- `overlays/dev/` — MinIO backup, restore test CronJob, local secrets
+- `overlays/prod/` — external S3, External Secrets, pooler, network policy
+- `recovery/` — manual restore manifests
+- `docs/DEV_DEPLOY.md` — development deployment (step-by-step)
+- `docs/PRODUCTION.md` — production runbook
+- `docs/CNPG_UPGRADE.md` — operator/CRD upgrades
+
+## ArgoCD
+
+| App                | Overlay             |
+|--------------------|---------------------|
+| `timescaledb-prod` | `k8s/overlays/prod` |
+| `timescaledb-dev`  | `k8s/overlays/dev`  |
+| `minio-dev`        | dev only            |
 
 ## Deploy
 
-```bash
-# 1. Create secrets from examples (see overlays/*/secrets/README.md)
-# 2. Apply overlay
-kubectl apply -k k8s/overlays/dev
-# or
-kubectl apply -k k8s/overlays/prod
-```
+- **Dev:** [docs/DEV_DEPLOY.md](docs/DEV_DEPLOY.md) (ArgoCD or `kubectl apply -k k8s/overlays/dev`)
+- **Prod:** [docs/PRODUCTION.md](docs/PRODUCTION.md) (AWS Secrets Manager + external S3)
 
-Base alone is incomplete without overlay `secretGenerator` entries.
+## Docs
 
-## Backup
-
-- Barman → MinIO at `s3://backups/timescale-cluster/`
-- Daily `ScheduledBackup` at 02:00 UTC
-- WAL + data compression: gzip
-- Backups run on standby when possible (`prefer-standby`)
+- [Development deployment](docs/DEV_DEPLOY.md)
+- [Production runbook](docs/PRODUCTION.md)
+- [CNPG upgrade](docs/CNPG_UPGRADE.md)

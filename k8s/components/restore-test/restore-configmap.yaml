@@ -2,29 +2,28 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: restore-test-manifest
-  namespace: hetida-platform-cnpg
 data:
   restore-test.yaml: |
     apiVersion: postgresql.cnpg.io/v1
     kind: Cluster
     metadata:
       name: timescale-restore-test
-      namespace: hetida-platform-cnpg
+      namespace: hetida-platform-dev
     spec:
       instances: 1
       imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
       bootstrap:
         recovery:
-          source: timescale-cluster
+          source: timescaledb
           recoveryTarget:
             targetImmediate: true
       storage:
         size: 10Gi
         storageClass: longhorn
       externalClusters:
-        - name: timescale-cluster
+        - name: timescaledb
           barmanObjectStore:
-            destinationPath: "s3://backups/timescale-cluster/"
+            destinationPath: "s3://backups/timescaledb/"
             endpointURL: "http://minio.minio-system.svc.cluster.local:9000"
             s3Credentials:
               accessKeyId:

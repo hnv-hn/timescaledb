@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: timescaledb-prod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '2'
+    environment: production
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/hnv-hn/timescaledb.git'
+    path: k8s/overlays/prod
+    targetRevision: main
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: hetida-platform-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
+  ignoreDifferences:
+    - group: postgresql.cnpg.io
+      kind: Cluster
+      jqPathExpressions:
+        - .status

@@ -2,9 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - cnpg-crds-backup.yaml
-  - cnpg-crds-clusterimagecatalog.yaml
-  - cnpg-crds-clusterlist.yaml
-  - cnpg-crds-imagecataloglist.yaml
-  - cnpg-crds-poolerlist.yaml
-  - cnpg-crds-scheduledbackup.yaml
+  - postgresql.cnpg.io_backups.yaml
+  - postgresql.cnpg.io_clusterimagecatalogs.yaml
+  - postgresql.cnpg.io_clusters.yaml
+  - postgresql.cnpg.io_databases.yaml
+  - postgresql.cnpg.io_failoverquorums.yaml
+  - postgresql.cnpg.io_imagecatalogs.yaml
+  - postgresql.cnpg.io_poolers.yaml
+  - postgresql.cnpg.io_publications.yaml
+  - postgresql.cnpg.io_scheduledbackups.yaml
+  - postgresql.cnpg.io_subscriptions.yaml

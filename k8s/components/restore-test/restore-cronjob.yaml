@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: timescale-restore-test
-  namespace: hetida-platform-cnpg
 spec:
   schedule: '0 4 * * *'
   successfulJobsHistoryLimit: 3
@@ -22,7 +21,7 @@ spec:
                 - -ec
                 - |
                   set -e
-                  NS=hetida-platform-cnpg
+                  NS=hetida-platform-dev
                   CLUSTER=timescale-restore-test
                   PRIMARY_POD="${CLUSTER}-1"
 

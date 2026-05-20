@@ -1,19 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: timescaledb
+  name: timescaledb-dev
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+    environment: development
 spec:
   project: default
   source:
-    repoURL: 'https://gitea.vhn-demo.duckdns.org/hoang/timescaledb.git'
-    path: k8s/base/hetida-platform-cnpg
+    repoURL: 'https://github.com/hnv-hn/timescaledb.git'
+    path: k8s/overlays/dev
     targetRevision: main
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: hetida-platform-cnpg
+    namespace: hetida-platform-dev
   syncPolicy:
     automated:
       prune: true

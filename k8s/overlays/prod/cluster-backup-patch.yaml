@@ -1,0 +1,23 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: timescaledb
+spec:
+  backup:
+    retentionPolicy: '30d'
+    target: prefer-standby
+    barmanObjectStore:
+      # Replace bucket and region for your production account (see k8s/docs/PRODUCTION.md)
+      destinationPath: 's3://hetida-timescaledb-prod/timescaledb/'
+      endpointURL: 'https://s3.eu-central-1.amazonaws.com'
+      s3Credentials:
+        accessKeyId:
+          name: s3-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: s3-creds
+          key: SECRET_ACCESS_KEY
+      data:
+        compression: gzip
+      wal:
+        compression: gzip

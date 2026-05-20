@@ -1,0 +1,36 @@
+# Dev-only: local S3-compatible backup target. Do not deploy to production.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'
+    environment: development
+spec:
+  project: default
+  source:
+    repoURL: https://charts.min.io/
+    chart: minio
+    targetRevision: 5.3.0
+    helm:
+      values: |
+        mode: standalone
+        replicas: 1
+        buckets:
+          - name: backups
+            policy: none
+            purge: false
+        existingSecret: minio-root-credentials
+        persistence:
+          size: 50Gi
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: minio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

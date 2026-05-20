@@ -1,0 +1,22 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: s3-creds
+  namespace: hetida-platform-dev
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: SecretStore
+  target:
+    name: s3-creds
+    creationPolicy: Owner
+  data:
+    - secretKey: ACCESS_KEY_ID
+      remoteRef:
+        key: timescaledb/prod/s3
+        property: access_key_id
+    - secretKey: SECRET_ACCESS_KEY
+      remoteRef:
+        key: timescaledb/prod/s3
+        property: secret_access_key

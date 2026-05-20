@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://gitea.vhn-demo.duckdns.org/hoang/timescaledb.git'
+    repoURL: 'https://github.com/hnv-hn/timescaledb.git'
     path: k8s/base/crds
     targetRevision: main
   destination:
@@ -18,3 +18,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

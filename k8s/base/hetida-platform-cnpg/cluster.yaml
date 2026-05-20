@@ -1,8 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: timescale-cluster
-  namespace: hetida-platform-cnpg
+  name: timescaledb
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
@@ -11,6 +10,8 @@ spec:
   maxSyncReplicas: 1
 
   primaryUpdateStrategy: unsupervised
+
+  enablePDB: true
 
   bootstrap:
     initdb:
@@ -46,6 +47,7 @@ spec:
 
   postgresql:
     parameters:
+      ssl: 'on'
       wal_level: 'replica'
       archive_timeout: '60s'
       max_wal_size: '1GB'
@@ -72,7 +74,7 @@ spec:
     retentionPolicy: '30d'
     target: prefer-standby
     barmanObjectStore:
-      destinationPath: 's3://backups/timescale-cluster/'
+      destinationPath: 's3://backups/timescaledb/'
       endpointURL: 'http://minio.minio-system.svc.cluster.local:9000'
       s3Credentials:
         accessKeyId:

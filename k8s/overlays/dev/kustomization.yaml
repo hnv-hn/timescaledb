@@ -1,10 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: hetida-platform-cnpg
+namespace: hetida-platform-dev
 
 resources:
   - ../../base/hetida-platform-cnpg
+  - ../../components/restore-test
 
 secretGenerator:
   - name: s3-creds

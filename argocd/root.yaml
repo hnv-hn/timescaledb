@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://gitea.vhn-demo.duckdns.org/hoang/timescaledb.git
+    repoURL: https://github.com/hnv-hn/timescaledb.git
     path: argocd/applications
     targetRevision: main
   destination:

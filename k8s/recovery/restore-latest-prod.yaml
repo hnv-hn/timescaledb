@@ -1,19 +1,22 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: timescale-restore-pitr
+  name: timescale-restore-latest
   namespace: hetida-platform-dev
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
+
   bootstrap:
     recovery:
       source: timescaledb
       recoveryTarget:
-        targetTime: '2026-05-06T02:30:00Z'
+        targetImmediate: true
+
   storage:
-    size: 50Gi
+    size: 100Gi
     storageClass: longhorn
+
   externalClusters:
     - name: timescaledb
       barmanObjectStore:

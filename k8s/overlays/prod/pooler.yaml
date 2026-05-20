@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: timescaledb-pooler-rw
+spec:
+  cluster:
+    name: timescaledb
+  instances: 2
+  type: rw
+  pgbouncer:
+    poolMode: transaction
+    parameters:
+      max_client_conn: '500'
+      default_pool_size: '25'

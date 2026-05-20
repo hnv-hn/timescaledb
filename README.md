@@ -88,7 +88,7 @@ Erwarten:
 Test direkt auf VM
 
 ```bash
-kubectl exec -it -n database timescale-cluster-1 -- psql -U postgres
+kubectl exec -it -n database timescaledb-1 -- psql -U postgres
 \c app
 ```
 
@@ -113,23 +113,23 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Backup
 metadata:
   name: restore-test-backup
-  namespace: hetida-platform-cnpg
+  namespace: hetida-platform-dev
 spec:
   cluster:
-    name: timescale-cluster
+    name: timescaledb
 EOF
 ```
 
 Warten:
 
 ```bash
-kubectl get backups -n hetida-platform-cnpg
+kubectl get backups -n hetida-platform-dev
 ```
 
 Erwarten:
 
 ```Code
-restore-test-backup   3m52s   timescale-cluster   barmanObjectStore   completed
+restore-test-backup   3m52s   timescaledb   barmanObjectStore   completed
 ```
 
 ### Daten ändern
@@ -149,11 +149,11 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: timescale-restore-test
-  namespace: hetida-platform-cnpg
+  namespace: hetida-platform-dev
 spec:
   instances: 1
 
-  imageName: ghcr.io/cloudnative-pg/postgresql:15
+  imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
 
   bootstrap:
     recovery:
@@ -166,7 +166,7 @@ spec:
     size: 10Gi
 
   externalClusters:
-    - name: timescale-cluster
+    - name: timescaledb
       barmanObjectStore:
         destinationPath: "s3://backups/"
         endpointURL: "http://minio.minio-system.svc.cluster.local:9000"

@@ -1,0 +1,29 @@
+# Example Alertmanager receiver config for Teams webhook.
+# Apply to your kube-prometheus-stack Alertmanager secret or use Prometheus Operator AlertmanagerConfig CRD.
+#
+# kubectl create secret generic alertmanager-teams-webhook \
+#   --from-literal=url='https://outlook.office.com/webhook/...' -n monitoring
+#
+# Route matching labels: team=platform, severity=critical
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-teams-receiver-example
+  labels:
+    app.kubernetes.io/component: alertmanager-config
+data:
+  alertmanager.yml: |
+    route:
+      receiver: default
+      routes:
+        - matchers:
+            - team=platform
+            - severity=critical
+          receiver: teams-platform
+          continue: true
+    receivers:
+      - name: default
+      - name: teams-platform
+        webhook_configs:
+          - url_file: /etc/alertmanager/secrets/teams-webhook-url
+            send_resolved: true
