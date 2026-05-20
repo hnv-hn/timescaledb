@@ -1,0 +1,20 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: timescale-cluster
+  namespace: hetida-platform-cnpg
+spec:
+  instances: 2
+  minSyncReplicas: 1
+  maxSyncReplicas: 1
+  storage:
+    size: 20Gi
+  resources:
+    requests:
+      memory: '1Gi'
+      cpu: '250m'
+    limits:
+      memory: '2Gi'
+      cpu: '1'
+  backup:
+    retentionPolicy: '7d'

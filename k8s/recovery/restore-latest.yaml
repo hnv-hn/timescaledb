@@ -2,7 +2,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: timescale-restore-latest
-  namespace: database
+  namespace: hetida-platform-cnpg
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
@@ -15,11 +15,12 @@ spec:
 
   storage:
     size: 50Gi
+    storageClass: longhorn
 
   externalClusters:
     - name: timescale-cluster
       barmanObjectStore:
-        destinationPath: 's3://backups/'
+        destinationPath: 's3://backups/timescale-cluster/'
         endpointURL: 'http://minio.minio-system.svc.cluster.local:9000'
         s3Credentials:
           accessKeyId:

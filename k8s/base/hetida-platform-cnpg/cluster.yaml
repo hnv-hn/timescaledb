@@ -7,15 +7,27 @@ spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:16-ts
 
+  minSyncReplicas: 1
+  maxSyncReplicas: 1
+
+  primaryUpdateStrategy: unsupervised
+
   bootstrap:
     initdb:
-      database: app
-      owner: app
-      postInitSQL:
+      database: hetida_ts
+      owner: tsadmin
+      secret:
+        name: hetida-platform-secrets
+      postInitApplicationSQL:
         - CREATE EXTENSION IF NOT EXISTS timescaledb;
+        - CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+
+  superuserSecret:
+    name: cnpg-superuser-secret
 
   storage:
     size: 50Gi
+    storageClass: longhorn
 
   resources:
     requests:
@@ -39,20 +51,28 @@ spec:
       max_wal_size: '1GB'
       min_wal_size: '80MB'
       checkpoint_timeout: '10min'
-      max_connections: '100' # mehr Verbindungen 200
-      shared_buffers: '256MB' # Cache im RAM 1GB
-      effective_cache_size: '3GB' # Optimizer hint
-      work_mem: '16MB' # pro Query
-      maintenance_work_mem: '256MB' # für VACUUM/REINDEX
+      max_connections: '100'
+      shared_buffers: '512MB'
+      effective_cache_size: '3GB'
+      work_mem: '16MB'
+      maintenance_work_mem: '256MB'
       wal_buffers: '16MB'
+      wal_compression: 'on'
       checkpoint_completion_target: '0.9'
-      random_page_cost: '1.1' # SSD optimiert
+      random_page_cost: '1.1'
       effective_io_concurrency: '200'
+      pg_stat_statements.track: 'top'
+      pg_stat_statements.max: '10000'
+      log_min_duration_statement: '1000'
+      log_lock_waits: 'on'
+      timescaledb.max_background_workers: '8'
+      autovacuum_naptime: '30s'
 
   backup:
-    retentionPolicy: '7d' # Backup älter als 7 Tage -> automatisch gelöscht
+    retentionPolicy: '30d'
+    target: prefer-standby
     barmanObjectStore:
-      destinationPath: 's3://backups/'
+      destinationPath: 's3://backups/timescale-cluster/'
       endpointURL: 'http://minio.minio-system.svc.cluster.local:9000'
       s3Credentials:
         accessKeyId:
@@ -61,5 +81,7 @@ spec:
         secretAccessKey:
           name: s3-creds
           key: SECRET_ACCESS_KEY
+      data:
+        compression: gzip
       wal:
         compression: gzip

@@ -6,30 +6,80 @@ metadata:
 spec:
   groups:
     - name: postgres.rules
+      interval: 30s
       rules:
         - alert: PostgresDeadlockDetected
-          expr: increase(pg_stat_database_deadlocks[5m]) > 0
+          expr: increase(pg_stat_database_deadlocks{datname="hetida_ts", cnpg_io_cluster="timescale-cluster"}[5m]) > 0
           for: 5m
           labels:
             severity: warning
           annotations:
             summary: 'PostgreSQL deadlock detected'
-            description: 'One or more deadlocks were detected in PostgreSQL in the last 5 minutes.'
+            description: 'Deadlocks detected on hetida_ts (timescale-cluster) in the last 5 minutes.'
+
+        - alert: PostgreSQLHighConnectionCount
+          expr: sum(pg_stat_activity_count{datname="hetida_ts", cnpg_io_cluster="timescale-cluster"}) > 80
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'PostgreSQL: high connection count ({{ $value }})'
+            description: 'Database connections above threshold on hetida_ts.'
 
         - alert: PostgresConnectionSaturation
-          expr: pg_stat_database_numbackends{datname="app"} / 100 > 0.9
+          expr: pg_stat_database_numbackends{datname="hetida_ts", cnpg_io_cluster="timescale-cluster"} / 100 > 0.9
           for: 10m
           labels:
             severity: warning
           annotations:
             summary: 'PostgreSQL connection usage high'
-            description: 'More than 90% of max_connections are in use for database app.'
+            description: 'More than 90% of max_connections are in use for hetida_ts.'
 
         - alert: PostgresIdleInTransaction
-          expr: increase(pg_stat_activity{state="idle in transaction"}[10m]) > 5
+          expr: increase(pg_stat_activity_count{datname="hetida_ts", state="idle in transaction", cnpg_io_cluster="timescale-cluster"}[10m]) > 5
           for: 10m
           labels:
             severity: warning
           annotations:
             summary: 'PostgreSQL idle-in-transaction connections'
-            description: 'More than 5 idle-in-transaction connections have been observed in the last 10 minutes.'
+            description: 'More than 5 idle-in-transaction connections observed in the last 10 minutes.'
+
+        - alert: PostgreSQLLowCacheHitRatio
+          expr: |
+            (
+              pg_stat_database_blks_hit{datname="hetida_ts", cnpg_io_cluster="timescale-cluster"}
+              /
+              (
+                pg_stat_database_blks_hit{datname="hetida_ts", cnpg_io_cluster="timescale-cluster"}
+                + pg_stat_database_blks_read{datname="hetida_ts", cnpg_io_cluster="timescale-cluster"}
+              )
+            ) < 0.99
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'PostgreSQL: cache hit ratio below 99%'
+            description: 'Database performance may be degraded on hetida_ts.'
+
+        - alert: PostgreSQLHighCPUUsage
+          expr: rate(process_cpu_seconds_total{pod=~"timescale-cluster-[0-9]+"}[5m]) * 100 > 80
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'PostgreSQL: CPU usage above 80%'
+            description: 'High CPU on timescale-cluster pod {{ $labels.pod }}.'
+
+        - alert: PostgreSQLHighMemoryUsage
+          expr: |
+            (
+              process_resident_memory_bytes{pod=~"timescale-cluster-[0-9]+"}
+              /
+              container_spec_memory_limit_bytes{pod=~"timescale-cluster-[0-9]+", container="postgres"}
+            ) * 100 > 90
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'PostgreSQL: memory usage above 90%'
+            description: 'High memory on timescale-cluster pod {{ $labels.pod }}.'

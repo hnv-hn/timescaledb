@@ -4,27 +4,39 @@ metadata:
   name: timescale-restore-test
   namespace: hetida-platform-cnpg
 spec:
-  schedule: '0 4 * * *' # täglich 04:00
+  schedule: '0 4 * * *'
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      backoffLimit: 1
       template:
         spec:
+          serviceAccountName: timescale-restore-test
           restartPolicy: OnFailure
           containers:
             - name: restore-test
               image: bitnami/kubectl:latest
               command:
                 - /bin/sh
-                - -c
+                - -ec
                 - |
+                  set -e
+                  NS=hetida-platform-cnpg
+                  CLUSTER=timescale-restore-test
+                  PRIMARY_POD="${CLUSTER}-1"
+
+                  kubectl delete cluster "${CLUSTER}" -n "${NS}" --ignore-not-found=true
+                  kubectl wait --for=delete cluster/"${CLUSTER}" -n "${NS}" --timeout=300s 2>/dev/null || true
+
                   kubectl apply -f /manifests/restore-test.yaml
-                  sleep 300
+                  kubectl wait --for=condition=Ready "cluster/${CLUSTER}" -n "${NS}" --timeout=900s
 
-                  kubectl get pods -n hetida-platform-cnpg
+                  kubectl exec -n "${NS}" "${PRIMARY_POD}" -c postgres -- \
+                    psql -U postgres -d hetida_ts -c "SELECT 1 AS restore_ok;"
 
-                  echo "✅ Restore Test executed"
-
-                  kubectl delete cluster timescale-restore-test -n hetida-platform-cnpg || true
+                  echo "Restore test succeeded"
+                  kubectl delete cluster "${CLUSTER}" -n "${NS}"
               volumeMounts:
                 - name: manifests
                   mountPath: /manifests

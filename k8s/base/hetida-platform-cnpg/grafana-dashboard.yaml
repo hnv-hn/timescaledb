@@ -2,9 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-cnpg-db-dashboard
-  namespace: hetida-platform-dev
+  namespace: hetida-platform-cnpg
 data:
-  timescale-db-monitoring.json: |
+  timescale-cluster-monitoring.json: |
     {
       "annotations": {
         "list": [
@@ -443,13 +443,13 @@ data:
           "pluginVersion": "8.0.0",
           "targets": [
             {
-              "expr": "rate(process_cpu_seconds_total{job=\"timescale-db\"}[5m]) * 100",
+              "expr": "rate(process_cpu_seconds_total{pod=~\"timescale-cluster-[0-9]+\"}[5m]) * 100",
               "legendFormat": "CPU %",
               "refId": "A"
             },
             {
-              "expr": "(process_resident_memory_bytes{job=\"timescale-db\"} / 2147483648) * 100",
-              "legendFormat": "Memory % (2GB max)",
+              "expr": "(process_resident_memory_bytes{pod=~\"timescale-cluster-[0-9]+\"} / container_spec_memory_limit_bytes{pod=~\"timescale-cluster-[0-9]+\", container=\"postgres\"}) * 100",
+              "legendFormat": "Memory %",
               "refId": "B"
             }
           ],
@@ -469,7 +469,7 @@ data:
       },
       "timepicker": {},
       "timezone": "",
-      "title": "PostgreSQL / TimescaleDB Monitoring (pg_stat_statements)",
-      "uid": "timescale-monitoring",
+      "title": "PostgreSQL / TimescaleDB Monitoring (timescale-cluster)",
+      "uid": "timescale-cluster-monitoring",
       "version": 0
     }

@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: hetida-platform-cnpg
+
+resources:
+  - ../../base/hetida-platform-cnpg
+
+secretGenerator:
+  - name: s3-creds
+    envs:
+      - secrets/s3-credentials.env
+    options:
+      disableNameSuffixHash: true
+  - name: hetida-platform-secrets
+    envs:
+      - secrets/hetida-platform-secrets.env
+    options:
+      disableNameSuffixHash: true
+  - name: cnpg-superuser-secret
+    envs:
+      - secrets/cnpg-superuser-secret.env
+    options:
+      disableNameSuffixHash: true
+
+patches:
+  - path: cluster-patch.yaml
