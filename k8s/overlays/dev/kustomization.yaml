@@ -7,22 +7,22 @@ resources:
   - ../../base/hetida-platform-cnpg
   - ../../components/restore-test
 
-secretGenerator:
-  - name: s3-creds
-    envs:
-      - secrets/s3-credentials.env
-    options:
-      disableNameSuffixHash: true
-  - name: hetida-platform-secrets
-    envs:
-      - secrets/hetida-platform-secrets.env
-    options:
-      disableNameSuffixHash: true
-  - name: cnpg-superuser-secret
-    envs:
-      - secrets/cnpg-superuser-secret.env
-    options:
-      disableNameSuffixHash: true
+#secretGenerator:
+#  - name: s3-creds
+#    envs:
+#      - secrets/s3-credentials.env
+#    options:
+#      disableNameSuffixHash: true
+#  - name: hetida-platform-secrets
+#    envs:
+#      - secrets/hetida-platform-secrets.env
+#    options:
+#      disableNameSuffixHash: true
+#  - name: cnpg-superuser-secret
+#    envs:
+#      - secrets/cnpg-superuser-secret.env
+#    options:
+#      disableNameSuffixHash: true
 
 patches:
   - path: cluster-patch.yaml

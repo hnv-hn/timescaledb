@@ -103,18 +103,21 @@ kubectl patch application timescaledb-crds -n argocd \
   
 kubectl wait --for=condition=Established crd/clusters.postgresql.cnpg.io --timeout=120s
 
-kubectl patch application minio-dev -n minio-system \
+kubectl patch application minio-dev -n argocd \
   --type merge \
-  -p '{"operation":{"sync":{}}}' \
+  -p '{"operation":{"sync":{}}}'
+
 kubectl wait --for=condition=Ready pod -l app=minio -n minio-system --timeout=300s
 
-kubectl patch application cnpg-operator -n cnpg-system \
+kubectl patch application cnpg-operator -n argocd \
   --type merge \
-  -p '{"operation":{"sync":{}}}' \
+  -p '{"operation":{"sync":{}}}'
 kubectl wait --for=condition=Available deployment -n cnpg-system \
   -l app.kubernetes.io/name=cloudnative-pg --timeout=300s
 
-argocd app sync timescaledb-dev
+kubectl patch application timescaledb-dev -n argocd \
+  --type merge \
+  -p '{"operation":{"sync":{}}}'
 ```
 
 ### Step 5 — Verify
