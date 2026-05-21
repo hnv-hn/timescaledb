@@ -8,7 +8,7 @@ spec:
   maxSyncReplicas: 1
   storage:
     size: 20Gi
-    storageClass: longhorn-dev
+    storageClass: longhorn-1
   resources:
     requests:
       memory: '1Gi'

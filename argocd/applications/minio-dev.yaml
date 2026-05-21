@@ -24,6 +24,7 @@ spec:
         existingSecret: minio-root-credentials
         persistence:
           size: 50Gi
+          storageClass: longhorn-1
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: minio-system
