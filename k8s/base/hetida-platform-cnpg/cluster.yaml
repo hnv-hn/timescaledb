@@ -47,7 +47,6 @@ spec:
 
   postgresql:
     parameters:
-      ssl: 'on'
       wal_level: 'replica'
       archive_timeout: '60s'
       max_wal_size: '1GB'

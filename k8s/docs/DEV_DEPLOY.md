@@ -209,7 +209,6 @@ Same commands as Path A, Step 5.
 | Database | `hetida_ts`                                       |
 | User     | `tsadmin`                                         |
 | Password | Secret `hetida-platform-secrets` → key `password` |
-| SSL      | `sslmode=require` (cluster has `ssl: on`)         |
 
 ```bash
 kubectl get secret hetida-platform-secrets -n hetida-platform-dev \
