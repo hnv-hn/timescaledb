@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: hetida-platform-dev
 
 resources:
-  - ../../base/hetida-platform-dev
+  - ../../base/hetida-platform-cnpg
   - longhorn-storageclass.yaml
   - external-secrets/secret-store.yaml
   - external-secrets/s3-creds.yaml

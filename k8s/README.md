@@ -3,7 +3,7 @@
 ## Layout
 
 - `base/crds/` — CNPG 0.28 CRDs (10 resources)
-- `base/hetida-platform-dev/` — cluster, backups, monitoring
+- `base/hetida-platform-cnpg/` — cluster, backups, monitoring (PodMonitor, PrometheusRules)
 - `overlays/dev/` — MinIO backup, restore test CronJob, local secrets
 - `overlays/prod/` — external S3, External Secrets, pooler, network policy
 - `recovery/` — manual restore manifests

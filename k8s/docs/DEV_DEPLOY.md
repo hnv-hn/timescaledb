@@ -11,6 +11,7 @@ Step-by-step guide to deploy the TimescaleDB CNPG stack in a **development** env
 | MinIO            | Helm chart                         | ArgoCD app `minio-dev`, backup target  |
 | Postgres cluster | `k8s/overlays/dev`                 | 2 instances, 20Gi, 7d backup retention |
 | Restore test     | `k8s/components/restore-test`      | CronJob daily 04:00 UTC                |
+| Monitoring       | `PodMonitor`, `PrometheusRule`, Grafana CM | Postgres metrics on port 9187 |
 
 Dev uses **MinIO** for backups (`http://minio.minio-system.svc.cluster.local:9000`), not external S3.
 
@@ -33,7 +34,7 @@ Dev uses **MinIO** for backups (`http://minio.minio-system.svc.cluster.local:900
 
    Install Longhorn if missing: [Longhorn docs](https://longhorn.io/docs/latest/deploy/install/).
 
-3. Optional (for monitoring CRDs): Prometheus Operator (`PodMonitor`, `PrometheusRule`)
+3. **Prometheus Operator** in namespace `monitoring` (e.g. kube-prometheus-stack) — required for `PodMonitor` / `PrometheusRule` scraping and alerts. Label that namespace: `kubernetes.io/metadata.name=monitoring`.
 
 4. For GitOps: ArgoCD installed in the cluster
 
@@ -129,6 +130,8 @@ kubectl get pods -n hetida-platform-dev -L cnpg.io/role
 kubectl get scheduledbackup -n hetida-platform-dev
 kubectl get backups -n hetida-platform-dev
 kubectl get cronjob timescale-restore-test -n hetida-platform-dev
+
+kubectl get podmonitor,prometheusrule -n hetida-platform-dev
 ```
 
 Expected:
@@ -137,6 +140,22 @@ Expected:
 - 2 Postgres pods (dev patch)
 - Daily backup at 02:00 UTC (`timescale-backup-daily`)
 - Restore test CronJob at 04:00 UTC
+- `PodMonitor/timescaledb` present; Prometheus targets show `cnpg_*` / `pg_*` metrics
+
+### Monitoring (dev)
+
+Manifests in `k8s/base/hetida-platform-cnpg/`: `podmonitor.yaml`, `postgres-monitor.yaml`, `backup-monitor.yaml`, Grafana dashboard ConfigMaps.
+
+- Postgres metrics: port **9187** (`metrics`), scraped via `PodMonitor` (not `enablePodMonitor` on the Cluster).
+- NetworkPolicy allows ingress from namespace `monitoring` (label `kubernetes.io/metadata.name=monitoring`).
+- CNPG operator PodMonitor: Helm `monitoring.podMonitorEnabled=true` on app `cnpg-operator`.
+
+Verify in Prometheus UI (or port-forward):
+
+```bash
+kubectl get podmonitor timescaledb -n hetida-platform-dev
+# Target should be UP: pod=<instance>, job=<namespace>/timescaledb/0
+```
 
 ---
 
@@ -289,6 +308,8 @@ kubectl delete cluster timescale-restore-pitr -n hetida-platform-dev
 | Backup target   | MinIO                            | External S3               |
 | Secrets         | `.env` / `kubectl create secret` | External Secrets Operator |
 | Restore CronJob | yes                              | no                        |
+| NetworkPolicy   | yes (app + monitoring + MinIO)   | yes (app + monitoring + S3) |
+| Monitoring      | PodMonitor + rules + dashboards  | same (base) + Teams alerts |
 
 Production: [PRODUCTION.md](PRODUCTION.md)
 
@@ -301,7 +322,7 @@ Symptom -> Likely cause -> Action
 - ArgoCD kustomize error on secrets -> `.env` not in Git -> Create secrets manually (Path A, Step 2)
 - Backup `Failed` -> MinIO down or wrong `s3-creds` -> Check MinIO pods and credential match
 - Cluster `Unhealthy` -> Insufficient CPU/RAM -> Check events: `kubectl describe cluster -n hetida-platform-dev`
-- PodMonitor not scraped -> No Prometheus Operator -> Install kube-prometheus-stack or disable `enablePodMonitor`
+- PodMonitor not scraped -> Prometheus Operator missing or namespace `monitoring` not labeled -> Install kube-prometheus-stack; label NS; check NetworkPolicy allows 9187
 - Two clusters conflict -> dev + prod on same NS -> Remove one overlay deployment
 
 ---

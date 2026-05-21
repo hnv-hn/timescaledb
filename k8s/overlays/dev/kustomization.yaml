@@ -6,6 +6,7 @@ namespace: hetida-platform-dev
 resources:
   - ../../base/hetida-platform-cnpg
   - ../../components/restore-test
+  - network-policy.yaml
 
 #secretGenerator:
 #  - name: s3-creds

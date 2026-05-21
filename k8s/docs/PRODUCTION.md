@@ -61,7 +61,7 @@ PVC size: 100Gi (see `cluster-patch.yaml`).
 
 ## TLS
 
-- Postgres: `ssl=on` in cluster parameters — apps must use `sslmode=require`
+- Postgres: TLS is managed by CNPG (do not set `ssl` in `postgresql.parameters`) — apps use `sslmode=require`
 - CNPG manages server certificates automatically
 - Backup path uses HTTPS to AWS S3
 
@@ -76,7 +76,8 @@ Adjust namespace labels before deploy.
 
 ## Monitoring and alerts
 
-- PodMonitor enabled on cluster and operator
+- Cluster: `PodMonitor/timescaledb` in `k8s/base/hetida-platform-cnpg/podmonitor.yaml` (replaces deprecated `enablePodMonitor`)
+- CNPG operator: Helm `monitoring.podMonitorEnabled=true`
 - PrometheusRules with `team=platform` labels route to Teams via Alertmanager
 - Grafana dashboards: `grafana-cnpg-db-dashboard`, `grafana-cnpg-backup-dashboard`
 

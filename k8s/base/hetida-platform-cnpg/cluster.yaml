@@ -42,9 +42,6 @@ spec:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
 
-  monitoring:
-    enablePodMonitor: true
-
   postgresql:
     parameters:
       wal_level: 'replica'

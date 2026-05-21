@@ -4,6 +4,7 @@ kind: Kustomization
 # Secrets and environment-specific resources are provided by overlays.
 resources:
   - cluster.yaml
+  - podmonitor.yaml
   - backup-daily.yaml
   - backup-monitor.yaml
   - postgres-monitor.yaml
