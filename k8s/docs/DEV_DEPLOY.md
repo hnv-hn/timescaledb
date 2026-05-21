@@ -11,7 +11,6 @@ Step-by-step guide to deploy the TimescaleDB CNPG stack in a **development** env
 | MinIO            | Helm chart                         | ArgoCD app `minio-dev`, backup target  |
 | Postgres cluster | `k8s/overlays/dev`                 | 2 instances, 20Gi, 7d backup retention |
 | Restore test     | `k8s/components/restore-test`      | CronJob daily 04:00 UTC                |
-| StorageClass longhorn-dev | `k8s/overlays/dev/longhorn-storageclass.yaml` | 1 Peplica (Single-Node) |
 | Monitoring       | `PodMonitor`, `PrometheusRule`, Grafana CM | Postgres metrics on port 9187  |
 
 Dev uses **MinIO** for backups (`http://minio.minio-system.svc.cluster.local:9000`), not external S3.
@@ -27,7 +26,7 @@ Dev uses **MinIO** for backups (`http://minio.minio-system.svc.cluster.local:900
 ## Prerequisites
 
 1. Kubernetes cluster (1.27+) with `kubectl` configured
-2. StorageClass **`longhorn-dev`** available:
+2. StorageClass **`longhorn`** available:
 
    ```bash
    kubectl get storageclass longhorn
@@ -135,7 +134,7 @@ kubectl get cronjob timescale-restore-test -n hetida-platform-dev
 kubectl get podmonitor,prometheusrule -n hetida-platform-dev
 
 kubectl get volumes.longhorn.io -n longhorn-system
-# Expectation: PVC storageClassName longhorn-dev; Longhorn robustness healthy (not faulted)
+# Expectation: PVC storageClassName longhorn; Longhorn robustness healthy (not faulted)
 ```
 
 Expected:
@@ -322,7 +321,7 @@ Production: [PRODUCTION.md](PRODUCTION.md)
 ## Troubleshooting
 Symptom -> Likely cause -> Action
 ---------------------------------
-- PVC `Pending` -> No StorageClass `longhorn-dev` or Node/Disk not ready 
+- PVC `Pending` -> No StorageClass `longhorn` or Node/Disk not ready 
   -> kubectl get nodes.longhorn.io -n longhorn-system; Install Longhorn
 - ArgoCD kustomize error on secrets -> `.env` not in Git -> Create secrets manually (Path A, Step 2)
 - Backup `Failed` -> MinIO down or wrong `s3-creds` -> Check MinIO pods and credential match

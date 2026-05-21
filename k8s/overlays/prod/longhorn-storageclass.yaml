@@ -7,7 +7,7 @@ metadata:
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 parameters:
-  numberOfReplicas: '3'
+  numberOfReplicas: '1'
   staleReplicaTimeout: '2880'
   fsType: ext4
   dataLocality: disabled

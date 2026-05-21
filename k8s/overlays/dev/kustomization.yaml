@@ -7,7 +7,7 @@ resources:
   - ../../base/hetida-platform-cnpg
   - ../../components/restore-test
   - network-policy.yaml
-  - longhorn-storageclass.yaml
+  # - longhorn-storageclass.yaml
 
 #secretGenerator:
 #  - name: s3-creds
