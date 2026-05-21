@@ -3,11 +3,11 @@ kind: Cluster
 metadata:
   name: timescaledb
 spec:
-  instances: 2
+  instances: 1
   minSyncReplicas: 1
   maxSyncReplicas: 1
   storage:
-    size: 20Gi
+    size: 10Gi
     storageClass: longhorn-1
   resources:
     requests:
