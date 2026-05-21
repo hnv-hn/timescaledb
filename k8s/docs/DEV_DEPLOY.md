@@ -59,6 +59,10 @@ kubectl create secret generic s3-creds -n hetida-platform-dev \
   --from-literal=SECRET_ACCESS_KEY='<minio-secret-key>' \
   --dry-run=client -o yaml | kubectl apply -f -
 
+# eg.:
+# MINIO_ROOT_USER=devstorage01
+# MINIO_ROOT_PASSWORD=K9mZ4qX2vW8tR6yP1sH7cB3nL5dE0aFJ
+
 kubectl create secret generic hetida-platform-secrets -n hetida-platform-dev \
   --from-literal=username=tsadmin \
   --from-literal=password='<app-db-password>' \
@@ -93,13 +97,20 @@ Use the same MinIO credentials in `s3-creds` if you use the default MinIO user f
 | 2    | `timescaledb-dev`  | Cluster `Healthy`                     |
 
 ```bash
-argocd app sync timescaledb-crds
+kubectl patch application timescaledb-crds -n argocd \
+  --type merge \
+  -p '{"operation":{"sync":{}}}'
+  
 kubectl wait --for=condition=Established crd/clusters.postgresql.cnpg.io --timeout=120s
 
-argocd app sync minio-dev
+kubectl patch application minio-dev -n minio-system \
+  --type merge \
+  -p '{"operation":{"sync":{}}}' \
 kubectl wait --for=condition=Ready pod -l app=minio -n minio-system --timeout=300s
 
-argocd app sync cnpg-operator
+kubectl patch application cnpg-operator -n cnpg-system \
+  --type merge \
+  -p '{"operation":{"sync":{}}}' \
 kubectl wait --for=condition=Available deployment -n cnpg-system \
   -l app.kubernetes.io/name=cloudnative-pg --timeout=300s
 
@@ -190,7 +201,7 @@ Same commands as Path A, Step 5.
 
 | Setting  | Value                                             |
 |----------|---------------------------------------------------|
-| Host     | `timescaledb-rw.hetida-platform-dev.svc`   |
+| Host     | `timescaledb-rw.hetida-platform-dev.svc`          |
 | Port     | `5432`                                            |
 | Database | `hetida_ts`                                       |
 | User     | `tsadmin`                                         |
